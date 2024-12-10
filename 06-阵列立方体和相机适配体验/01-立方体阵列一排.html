@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 0px;
+      padding: 0px;
+      overflow: hidden;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports":{
+        "three":"../threejs/build/three.module.js",
+        "three/addons/":"../threejs/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+    import Stats from 'three/addons/libs/stats.module.js'
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    //创建场景
+    const scene = new THREE.Scene();
+
+    //创建1000盒子
+    const num = 20;
+    const geometry = new THREE.BoxGeometry(20, 20, 20);
+    const material = new THREE.MeshBasicMaterial({
+      color: 0x23131,
+      transparent: true,
+      opacity: 0.8
+    })
+    let x = 0;
+    let z = 0;
+    for (let i = 0; i < num; i++) {
+      for (let j = 0; j < num; j++) {
+        const box = new THREE.Mesh(geometry, material);
+        //沿着x轴阵列分布
+        box.position.set(x, 0, z)
+        scene.add(box);
+        x += 35
+      }
+      x = 0;
+      z += 35;
+    }
+
+
+    //创建相机，相机的宽高比通常需要和render区域的宽高比相同
+    //可以尝试更改不同参数查看效果
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+    camera.position.set(800, 300, 800);
+    camera.lookAt(0, 0, 0);
+    // camera.lookAt(400, 400, 400);
+
+    //创建渲染器
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(width, height);
+    document.body.appendChild(renderer.domElement)
+
+    //创建轨道控制器，orbitControls会影响lookAt的值（target属性）
+    //orbitControls.target.set()这个值默认为（0，0，0，），可以修改（lookAt会同步修改）
+    const orbitControls = new OrbitControls(camera, renderer.domElement);
+    orbitControls.target.set(200, 0, 200)
+    orbitControls.update();
+    scene.add(orbitControls)
+
+    //创建坐标系
+    const axes = new THREE.AxesHelper(10000);
+    scene.add(axes);
+
+    //创建stats对象,监控性能
+    const stats = new Stats(1000);
+    document.body.appendChild(stats.domElement);
+
+    function render() {
+      requestAnimationFrame(render);
+      renderer.render(scene, camera);
+      stats.update();
+    }
+    render()
+
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      //更新相机的宽高比
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    })
+
+  </script>
+
+</body>
+
+</html>

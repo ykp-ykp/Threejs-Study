@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 10px;
+    }
+  </style>
+  <div id="root" style="margin-top: 100px;"></div>
+  <script type="importmap">
+    {
+      "imports":{
+        "three":"../threejs/build/three.module.js",
+        "three/addons/":"../threejs/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const width = 600;
+    const height = 500;
+    let scene = null;
+    let material = null;
+    let geometry = null;
+    let mesh = null;
+    let pointLight = null;
+    let axes = null;
+    let camera = null;
+    let renderer = null;
+
+    function createScene() {
+      scene = new THREE.Scene();
+    }
+
+    function createGeometry() {
+      geometry = new THREE.BoxGeometry(10, 10, 10)
+    }
+
+    function createMaterial() {
+      //MeshLambertMaterial类型的材质会受到光源的影响
+      //如果没有光源就不会亮
+      material = new THREE.MeshLambertMaterial({
+        color: 0xeeee,
+      })
+    }
+
+    function createMesh() {
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(0, 0, 0);
+      scene.add(mesh);
+
+    }
+
+    //创建点光源
+    function createPointLight() {
+      //  设置光照颜色和光照强度
+      pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.decay = 0; //设置光源不随距离而衰减
+      pointLight.position.set(100, 0, 0) //设置光源的位置，只照射x轴正面
+      // pointLight.position.set(100, 100, 50) //设置光源的位置，照射三个面
+      scene.add(pointLight);
+    }
+
+    //创建坐标轴
+    function createAxes() {
+      //红色表示x轴，绿色表示y轴，蓝色表示z轴(x,y,z)=>(r,g,b)
+      axes = new THREE.AxesHelper(100)
+      scene.add(axes);
+    }
+
+    function createCamera() {
+      camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
+      camera.position.set(40, 40, 40)
+      camera.lookAt(0, 0, 0)
+    }
+
+    function createRenderer() {
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      renderer.render(scene, camera)
+      document.getElementById('root').appendChild(renderer.domElement);
+
+    }
+
+
+    createScene()
+    createGeometry()
+    createMaterial();
+    createMesh();
+    createCamera();
+    createPointLight();
+    createAxes();
+    createRenderer();
+  </script>
+
+</body>
+
+</html>

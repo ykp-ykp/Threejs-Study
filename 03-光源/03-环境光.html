@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 10px;
+    }
+  </style>
+  <div id="root" style="margin-top: 100px;"></div>
+  <script type="importmap">
+    {
+      "imports":{
+        "three":"../threejs/build/three.module.js",
+        "three/addons/":"../threejs/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+
+    const width = 600;
+    const height = 500;
+    let scene = null;
+    let material = null;
+    let geometry = null;
+    let mesh = null;
+    let axes = null;
+    let ambientLight = null;  //环境光
+    let camera = null;
+    let renderer = null;
+    let orbitControls = null; //轨道控制器
+
+    function createScene() {
+      scene = new THREE.Scene();
+    }
+
+    function createGeometry() {
+      geometry = new THREE.BoxGeometry(10, 10, 10)
+    }
+
+    function createMaterial() {
+      //MeshLambertMaterial类型的材质会受到光源的影响
+      //如果没有光源就不会亮
+      material = new THREE.MeshLambertMaterial({
+      })
+    }
+
+    function createMesh() {
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(0, 0, 0);
+      scene.add(mesh);
+    }
+
+    function createAxes() {
+      axes = new THREE.AxesHelper(1000)
+      scene.add(axes)
+    }
+
+    //创建环境光源,环境光不区分位置，整个场景都能照到
+    function createAmbientLight() {
+      //  设置光照颜色和光照强度
+      ambientLight = new THREE.AmbientLight(0x666666, 1);
+      scene.add(ambientLight);
+    }
+
+
+    function createCamera() {
+      camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+      camera.position.set(40, 40, 40)
+      camera.lookAt(0, 0, 0)
+    }
+
+    function createRenderer() {
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      renderer.render(scene, camera)
+      document.getElementById('root').appendChild(renderer.domElement);
+    }
+
+    function createOrbitControls() {
+      orbitControls = new OrbitControls(camera, renderer.domElement);
+      orbitControls.addEventListener('change', () => {
+        renderer.render(scene, camera);
+      })
+    }
+
+
+    createScene()
+    createGeometry()
+    createMaterial();
+    createMesh();
+    createAxes();
+    createCamera();
+    createAmbientLight();
+    createRenderer();
+    createOrbitControls()
+  </script>
+
+</body>
+
+</html>

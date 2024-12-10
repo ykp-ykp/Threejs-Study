@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 10px;
+    }
+  </style>
+  <div id="root" style="margin-top: 100px;"></div>
+  <script type="importmap">
+    {
+      "imports":{
+        "three":"../threejs/build/three.module.js",
+        "three/addons/":"../threejs/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const width = 600;
+    const height = 500;
+    let scene = null;
+    let material = null;
+    let geometry = null;
+    let mesh = null;
+    let axes = null;
+    let camera = null;
+    let renderer = null;
+
+    function createScene() {
+      scene = new THREE.Scene();
+    }
+
+    function createGeometry() {
+      geometry = new THREE.BoxGeometry(10, 10, 10)
+    }
+
+    function createMaterial() {
+      material = new THREE.MeshBasicMaterial({
+        color: 0xeeee,
+        transparent: true,
+        opacity: 0.5
+      })
+    }
+
+    function createMesh() {
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(5, 0, 0);
+      scene.add(mesh);
+
+    }
+
+    function createAxes() {
+      //红色表示x轴，绿色表示y轴，蓝色表示z轴(x,y,z)=>(r,g,b)
+      axes = new THREE.AxesHelper(100)
+      scene.add(axes);
+    }
+
+    function createCamera() {
+      //使相机的远截面看不到物体，远截面再增加1就可以看到物体了
+      camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 29);
+      camera.position.set(-30, 0, 0)
+      camera.lookAt(0, 0, 0)
+    }
+
+    function createRenderer() {
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      renderer.render(scene, camera)
+      document.getElementById('root').appendChild(renderer.domElement);
+
+    }
+
+    createScene()
+    createGeometry()
+    createMaterial();
+    createMesh();
+    createCamera();
+    createAxes();
+    createRenderer();
+  </script>
+
+</body>
+
+</html>

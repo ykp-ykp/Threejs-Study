@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 10px;
+    }
+  </style>
+  <div style="width: 600px;border:1px solid red"></div>
+  <div id="root" style="margin-top: 100px"></div>
+  <script type="importmap">
+    {
+      "imports":{
+        "three":"../threejs/build/three.module.js",
+        "three/addons/":"../threejs/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+
+    const width = 600;
+    const height = 500;
+    let scene = null;
+    let material = null;
+    let geometry = null;
+    let mesh = null;
+    let axes = null;
+    let ambientLight = null;
+    let directionalLight = null;  //环境光
+    let lightHelper = null; //平行光辅助器
+    let camera = null;
+    let renderer = null;
+    let orbitControls = null; //轨道控制器
+
+    function createScene() {
+      scene = new THREE.Scene();
+    }
+
+    function createGeometry() {
+      geometry = new THREE.BoxGeometry(10, 10, 10)
+    }
+
+    function createMaterial() {
+      //MeshLambertMaterial类型的材质会受到光源的影响
+      //如果没有光源就不会亮
+      material = new THREE.MeshLambertMaterial()
+    }
+
+    function createMesh() {
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(10, 0, 0);
+      scene.add(mesh);
+    }
+
+    function createAxes() {
+      axes = new THREE.AxesHelper(1000)
+      scene.add(axes)
+    }
+
+    //创建环境光源,环境光不区分位置，整个场景都能照到
+    function createAmbientLight() {
+      //  设置光照颜色和光照强度
+      ambientLight = new THREE.DirectionalLight(0x666666, 1);
+      scene.add(ambientLight);
+    }
+
+    //创建平行光源，其需要设置位置点和目标点
+    function createDirectionLight() {
+      //  设置光照颜色和光照强度
+      directionalLight = new THREE.DirectionalLight(0xa16972, 1);
+      //设置光源的起点
+      directionalLight.position.set(30, 30, 30)
+      //设置光源往哪个方向照射，不设置时默认为（0，0，0）
+      // directionalLight.target = mesh;
+      scene.add(directionalLight);
+    }
+
+    function createLightHelper() {
+      lightHelper = new THREE.DirectionalLightHelper(directionalLight);
+      scene.add(lightHelper)
+    }
+
+    function createCamera() {
+      camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+      camera.position.set(30, 30, 30)
+      camera.lookAt(0, 0, 0)
+    }
+
+    function createRenderer() {
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      renderer.render(scene, camera)
+      document.getElementById('root').appendChild(renderer.domElement);
+    }
+
+
+    function createOrbitControls() {
+      orbitControls = new OrbitControls(camera, renderer.domElement);
+      orbitControls.addEventListener('change', () => {
+        renderer.render(scene, camera);
+      })
+    }
+
+
+    createScene()
+    createGeometry()
+    createMaterial();
+    createMesh();
+    createAxes();
+    createCamera();
+    createAmbientLight();
+    createDirectionLight();
+    createLightHelper();
+    createRenderer();
+    createOrbitControls()
+    console.log(renderer.domElement)
+
+  </script>
+
+</body>
+
+</html>
